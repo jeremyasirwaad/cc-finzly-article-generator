@@ -1,0 +1,17 @@
+# Local / personal overrides — never pushed
+*.local
+.claude/settings.local.json
+
+# Secrets
+.env
+.env.*
+secrets/
+
+# Dependencies
+node_modules/
+
+# Generated images
+*.png
+
+# OS / editor cruft
+.DS_Store

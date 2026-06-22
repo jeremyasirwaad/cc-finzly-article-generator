@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)"
+    ]
+  },
+  "companyAnnouncements": [
+    "Welcome to Finzly! BankOS payment rails, FX, and the Galaxy app await.",
+    "Reminder: never commit API keys or secrets — keep them in .env (now deny-listed).",
+    "Finzly tip: real-time payments move fast, so should your code reviews."
+  ]
+}

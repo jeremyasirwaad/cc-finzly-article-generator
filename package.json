@@ -1,0 +1,13 @@
+{
+  "name": "finzly-image-gen",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CLI to generate images via the Gemini API",
+  "scripts": {
+    "generate": "node generate-image.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.0.0"
+  }
+}
