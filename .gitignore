@@ -12,6 +12,8 @@ node_modules/
 
 # Generated images
 *.png
+# ...but keep skill assets (logos) tracked
+!.claude/skills/**/assets/*.png
 
 # OS / editor cruft
 .DS_Store

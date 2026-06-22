@@ -5,7 +5,7 @@
   "type": "module",
   "description": "CLI to generate images via the Gemini API",
   "scripts": {
-    "generate": "node generate-image.js"
+    "generate": "node .claude/skills/nano-banana-image-gen/scripts/generate-image.js"
   },
   "dependencies": {
     "@google/genai": "^1.0.0"

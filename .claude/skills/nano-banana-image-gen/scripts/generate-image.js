@@ -38,32 +38,37 @@ function mimeForPath(filePath) {
 async function generateImage({ prompt, outputPath, inputImagePath }) {
   const ai = new GoogleGenAI({});
 
-  // Build the input: a plain string when there's no image, otherwise a
-  // text + image array so the model conditions on the provided picture.
-  let input;
+  // Build the request parts: the text prompt plus, optionally, a source image
+  // (as inlineData) so the model conditions on / edits the provided picture.
+  const parts = [{ text: prompt }];
   if (inputImagePath) {
     const base64Image = fs.readFileSync(inputImagePath).toString("base64");
-    input = [
-      { type: "text", text: prompt },
-      {
-        type: "image",
-        mime_type: mimeForPath(inputImagePath),
+    parts.push({
+      inlineData: {
+        mimeType: mimeForPath(inputImagePath),
         data: base64Image,
       },
-    ];
-  } else {
-    input = prompt;
+    });
   }
 
-  const interaction = await ai.interactions.create({ model: MODEL, input });
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: [{ role: "user", parts }],
+  });
 
-  const generatedImage = interaction.output_image;
-  if (!generatedImage) {
-    throw new Error("No image was returned by the model.");
+  const candidateParts = response?.candidates?.[0]?.content?.parts ?? [];
+  const imagePart = candidateParts.find((p) => p.inlineData?.data);
+  if (!imagePart) {
+    const textPart = candidateParts.find((p) => p.text)?.text;
+    throw new Error(
+      textPart
+        ? `No image was returned by the model. Model said: ${textPart}`
+        : "No image was returned by the model."
+    );
   }
 
   fs.mkdirSync(path.dirname(path.resolve(outputPath)), { recursive: true });
-  fs.writeFileSync(outputPath, Buffer.from(generatedImage.data, "base64"));
+  fs.writeFileSync(outputPath, Buffer.from(imagePart.inlineData.data, "base64"));
   console.log(`Image saved as ${outputPath}`);
 }
 
