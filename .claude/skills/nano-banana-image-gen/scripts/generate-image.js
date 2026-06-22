@@ -4,6 +4,11 @@ import * as path from "node:path";
 
 const MODEL = "gemini-3.1-flash-image";
 
+// All generated images land here unless the caller passes a path that already
+// includes a directory (relative or absolute). Resolved against the current
+// working directory (the project root, where the script is meant to be run).
+const DEFAULT_OUTPUT_DIR = "image-output";
+
 const MIME_BY_EXT = {
   ".png": "image/png",
   ".jpg": "image/jpeg",
@@ -67,9 +72,16 @@ async function generateImage({ prompt, outputPath, inputImagePath }) {
     );
   }
 
-  fs.mkdirSync(path.dirname(path.resolve(outputPath)), { recursive: true });
-  fs.writeFileSync(outputPath, Buffer.from(imagePart.inlineData.data, "base64"));
-  console.log(`Image saved as ${outputPath}`);
+  // Bare filenames (no directory component) go into the default output dir so
+  // every generated image is collected in one place.
+  const finalPath =
+    path.dirname(outputPath) === "."
+      ? path.join(DEFAULT_OUTPUT_DIR, outputPath)
+      : outputPath;
+
+  fs.mkdirSync(path.dirname(path.resolve(finalPath)), { recursive: true });
+  fs.writeFileSync(finalPath, Buffer.from(imagePart.inlineData.data, "base64"));
+  console.log(`Image saved as ${finalPath}`);
 }
 
 async function main() {

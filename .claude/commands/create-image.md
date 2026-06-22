@@ -13,6 +13,9 @@ node .claude/skills/nano-banana-image-gen/scripts/generate-image.js "<prompt>" <
 
 Follow the skill's guidance in `.claude/skills/nano-banana-image-gen/SKILL.md` for prompting,
 Finzly logo branding (assets in `.claude/skills/nano-banana-image-gen/assets/`), and API options.
-After generating, read the output image back to confirm the result.
+
+Pass a **bare filename** as `<outputPath>` (e.g. `cat.png`) — the script writes every image to the
+`image-output/` directory automatically. After generating, read the output image
+(`image-output/<filename>`) back to confirm the result.
 
 User request: $ARGUMENTS

@@ -25,7 +25,10 @@ node .claude/skills/nano-banana-image-gen/scripts/generate-image.js "<prompt>" <
 
 - `<prompt>` — quote it. Be specific: subject, style, lighting, composition, aspect (see the
   prompting guide in the reference).
-- `<outputPath>` — e.g. `out.png`. Parent dirs are created automatically.
+- `<outputPath>` — e.g. `out.png`. **Pass a bare filename** (no directory) and the image is written
+  to `image-output/<filename>` automatically — all generated images are collected there. Pass an
+  explicit relative/absolute path only if you deliberately want a different location. Parent dirs
+  are created automatically.
 - `[inputImagePath]` — optional. When provided, the image is sent alongside the prompt so the model
   edits/conditions on it (add/remove elements, restyle, composite). PNG/JPG/WEBP/GIF supported.
 
