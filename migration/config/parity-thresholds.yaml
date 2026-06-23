@@ -1,0 +1,53 @@
+# =============================================================================
+# parity-thresholds.yaml — the bar a migrated page must clear to be "done".
+# Used by visual-parity-eval / behavior-parity-eval skills and the reviewer agents.
+# "Exact migration" => tight thresholds. Loosen deliberately, per-page, with a note.
+# =============================================================================
+
+visual:
+  # Max fraction of pixels allowed to differ (0.0 = identical). 0.001 = 0.1% of pixels.
+  max_diff_ratio: 0.001
+  # Per-pixel color tolerance (0-255) before a pixel counts as "different".
+  pixel_threshold: 0.1
+  # Anti-aliasing tolerance — ignore sub-pixel AA noise on text/edges.
+  include_anti_aliasing: false
+  # Regions excluded from diff (dynamic content). CSS selectors / bounding boxes per page
+  # are listed in each page's spec; these are global defaults.
+  global_masks:
+    - "clock, [data-dynamic], .timestamp, .session-id"
+  # Fonts must be loaded before capture (avoids fallback-font diffs).
+  wait_for_fonts: true
+  # Disable CSS animations/transitions and freeze time before capture.
+  freeze_animations: true
+
+layout:
+  # Box-model parity (via Chrome DevTools MCP computed styles). Per-element tolerance in px.
+  position_tolerance_px: 1
+  size_tolerance_px: 1
+  # Computed-style properties that must match exactly on mapped elements.
+  enforce_styles:
+    - "color"
+    - "background-color"
+    - "font-family"
+    - "font-size"
+    - "font-weight"
+    - "border"
+    - "padding"
+    - "margin"
+
+behavior:
+  # Every interaction in the page spec's "interactions" list must reproduce identically.
+  require_all_pass: true
+  # Network/data parity: same requests fired, same shape of payload (URLs may differ).
+  assert_request_parity: true
+  # Console must be clean (no new errors) on the Angular side.
+  allow_console_errors: false
+
+accessibility:
+  # a11y must be >= legacy (use chrome-devtools-mcp:a11y-debugging). New pages can be better.
+  no_regressions: true
+  min_contrast_ratio: 4.5
+
+gate:
+  # A page is marked DONE only when ALL of these are true.
+  require: ["visual", "layout", "behavior", "accessibility"]

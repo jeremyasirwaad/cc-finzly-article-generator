@@ -1,0 +1,59 @@
+# =============================================================================
+# migration.config.yaml — single source of truth for the Ext JS -> Angular migration
+# Read by every skill, agent, and command. Edit this first, before running anything.
+# =============================================================================
+
+project:
+  name: "ExtJS Classic -> Angular 20 migration"
+  total_pages: 150            # update after /migration:plan builds the real inventory
+  exactness: "pixel"          # "pixel" = exact visual parity required; "visual" = perceptual only
+
+source:                       # the legacy app being migrated FROM
+  framework: "Ext JS"
+  toolkit: "classic"          # classic | modern
+  ext_version: "7.x"          # set to your real version (4/5/6/7)
+  code_path: "./legacy-extjs" # <-- POINT THIS at the Ext JS source root (sencha app dir)
+  app_json: "./legacy-extjs/app.json"
+  run:
+    url: "http://localhost:1841"   # the running legacy app (sencha app watch, or built)
+    start_cmd: "sencha app watch"  # how to bring the legacy app up for baseline capture
+    login:                          # optional: auth steps Playwright replays before capture
+      required: false
+      username_env: "LEGACY_USER"
+      password_env: "LEGACY_PASS"
+
+target:                       # the new app being migrated TO
+  framework: "Angular"
+  angular_version: "20"
+  architecture: "standalone"  # standalone components + signals (NO NgModules)
+  ui_library: "@angular/material"
+  cdk: true                   # use @angular/cdk (virtual scroll, drag-drop, overlay, a11y)
+  styles: "scss"
+  code_path: "./angular-app"  # <-- the Angular workspace root (created by `ng new`)
+  run:
+    url: "http://localhost:4200"
+    start_cmd: "ng serve"
+
+# Viewports the parity eval captures at. Match these to how users actually run the app.
+viewports:
+  - { name: "desktop", width: 1440, height: 900 }
+  - { name: "laptop",  width: 1280, height: 720 }
+
+# Strangler-fig integration: how migrated Angular pages get served alongside legacy Ext JS.
+integration:
+  strategy: "strangler-fig"   # route-by-route cutover; both apps run during migration
+  shell: "angular"            # which app owns the top-level shell/nav after cutover
+  route_bridge: "reverse-proxy" # reverse-proxy | iframe | micro-frontend
+  proxy_rules_file: "./.migration/config/route-bridge.md"
+
+# Where eval artifacts are written (per page).
+artifacts:
+  root: "./.migration/evals"
+  layout: "{root}/{page_id}/{viewport}/{baseline|candidate|diff}.png"
+  report: "{root}/{page_id}/report.md"
+
+naming:
+  # Ext view class  ->  Angular artifact naming convention
+  component_suffix: ".component.ts"
+  feature_dir: "src/app/features/{feature}/{page}"   # one folder per migrated page
+  route_prefix: ""            # e.g. "app/" if Angular is served under a sub-path

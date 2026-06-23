@@ -1,0 +1,13 @@
+{
+  "$comment": "Project-scoped MCP servers for the Ext JS -> Angular migration parity eval. Auto-loaded by Claude Code from the project root. If you installed the Playwright plugin via `claude plugin install playwright@claude-plugins-official`, that already provides the Playwright MCP and you may remove the 'playwright' entry here to avoid duplicates. See .migration/commands/setup-mcp.md.",
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest", "--isolated", "--viewport-size=1440,900"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest", "--headless=false", "--isolated=true"]
+    }
+  }
+}

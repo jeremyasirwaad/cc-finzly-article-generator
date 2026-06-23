@@ -1,0 +1,90 @@
+# =============================================================================
+# component-map.yaml — machine-readable Ext JS (Classic) -> Angular 20 + Material map.
+# The human-readable reference with caveats/edge-cases lives in
+# .migration/skills/extjs-classic-mapping/SKILL.md. Keep the two in sync.
+# Agents read this to pick targets deterministically; the SKILL explains the "how".
+# =============================================================================
+
+components:
+  # --- Containers / layout ---
+  "Ext.panel.Panel":        { angular: "<mat-card> or styled <section>", notes: "header->mat-card-title; tools->header buttons" }
+  "Ext.container.Container": { angular: "<div> with flex/grid", notes: "pure layout host" }
+  "Ext.tab.Panel":          { angular: "<mat-tab-group>/<mat-tab>", notes: "tabchange -> (selectedTabChange)" }
+  "Ext.window.Window":      { angular: "MatDialog (component + dialogRef)", notes: "modal/draggable via CDK drag" }
+  "Ext.window.MessageBox / Ext.Msg": { angular: "MatDialog / MatSnackBar", notes: "confirm/alert/prompt" }
+  "Ext.toolbar.Toolbar":    { angular: "<mat-toolbar>", notes: "fill->flex spacer" }
+  "Ext.menu.Menu":          { angular: "<mat-menu>", notes: "matMenuTriggerFor" }
+  "Ext.viewport.Viewport":  { angular: "AppShellComponent + router-outlet", notes: "top-level shell" }
+
+  # --- Grid (highest-risk; see SKILL for full feature matrix) ---
+  "Ext.grid.Panel":         { angular: "MatTable + CDK virtual scroll", notes: "see grid feature map below" }
+  "Ext.grid.column.Column": { angular: "matColumnDef", notes: "renderer -> cell template/pipe" }
+  "Ext.grid.column.Action": { angular: "cell template with mat-icon-button" }
+  "Ext.grid.column.Check":  { angular: "matCheckboxColumn / mat-checkbox cell" }
+  "Ext.selection.CheckboxModel": { angular: "SelectionModel (CDK)" }
+  "Ext.grid.plugin.CellEditing":  { angular: "inline editable cell templates + FormControl" }
+  "Ext.grid.feature.Grouping":    { angular: "MatTable groupBy pattern (sticky group rows)" }
+
+  # --- Trees ---
+  "Ext.tree.Panel":         { angular: "MatTree (nested or flat datasource)", notes: "checkbox tree via SelectionModel" }
+
+  # --- Forms / fields ---
+  "Ext.form.Panel":         { angular: "Reactive form: <form [formGroup]>", notes: "FormBuilder; validators map below" }
+  "Ext.form.field.Text":    { angular: "<mat-form-field><input matInput>" }
+  "Ext.form.field.Number":  { angular: "<input matInput type=number> or mask" }
+  "Ext.form.field.ComboBox":{ angular: "<mat-select> or matAutocomplete", notes: "remote store -> async options; typeahead -> autocomplete" }
+  "Ext.form.field.Date":    { angular: "<mat-datepicker>" }
+  "Ext.form.field.Checkbox":{ angular: "<mat-checkbox>" }
+  "Ext.form.field.Radio":   { angular: "<mat-radio-group>/<mat-radio-button>" }
+  "Ext.form.field.TextArea":{ angular: "<textarea matInput>" }
+  "Ext.form.field.Display": { angular: "static text binding" }
+  "Ext.form.field.File":    { angular: "<input type=file> + custom control" }
+  "Ext.form.FieldSet":      { angular: "<fieldset> or grouped mat-card section" }
+
+  # --- Buttons / misc ---
+  "Ext.button.Button":      { angular: "<button mat-button|mat-raised-button|mat-icon-button>" }
+  "Ext.button.Split":       { angular: "button + mat-menu" }
+  "Ext.form.field.Hidden":  { angular: "hidden FormControl" }
+  "Ext.ProgressBar":        { angular: "<mat-progress-bar>" }
+  "Ext.LoadMask":           { angular: "<mat-progress-spinner> overlay (CDK overlay)" }
+  "Ext.tip.ToolTip":        { angular: "matTooltip" }
+  "Ext.picker.Color":       { angular: "custom (no Material equiv) — keep CSS exact" }
+
+layouts:
+  "border":  { angular: "CSS grid: header/sider/content/footer template-areas" }
+  "fit":     { angular: "child fills parent (height:100%/flex:1)" }
+  "vbox":    { angular: "flex-direction: column" }
+  "hbox":    { angular: "flex-direction: row" }
+  "anchor":  { angular: "% widths / flex-basis" }
+  "card":    { angular: "@switch / ngTemplateOutlet (one child visible)" }
+  "column":  { angular: "CSS grid columns or flex-wrap" }
+  "accordion": { angular: "<mat-accordion><mat-expansion-panel>" }
+  "table":   { angular: "CSS grid / <table> when truly tabular layout" }
+
+data:
+  "Ext.data.Store":   { angular: "feature service exposing signals + RxJS", notes: "load()->HttpClient; sorters/filters->computed signals or server params" }
+  "Ext.data.Model":   { angular: "TypeScript interface + (optional) class", notes: "fields->props; validators->form validators; associations->nested types" }
+  "Ext.data.proxy.Ajax / Rest": { angular: "HttpClient service method", notes: "reader.rootProperty->response mapping" }
+  "Ext.data.TreeStore": { angular: "tree datasource service" }
+  "Ext.data.ChainedStore": { angular: "computed signal deriving from base store signal" }
+
+events_binding:
+  "listeners / on()":        { angular: "(event) handlers / @Output / host listeners" }
+  "ViewModel data binding":  { angular: "signals + computed; template interpolation" }
+  "bind: { ... }":           { angular: "[property]=\"signal()\" bindings" }
+  "ViewController":          { angular: "component class methods" }
+  "reference / lookup":      { angular: "@ViewChild / template ref vars" }
+  "publishes / two-way":     { angular: "[(ngModel)] or signal + (change)" }
+  "fireEvent":               { angular: "output.emit() / Subject.next()" }
+
+validators:
+  "allowBlank: false": "Validators.required"
+  "vtype: email":      "Validators.email"
+  "minLength/maxLength": "Validators.minLength/maxLength"
+  "regex":             "Validators.pattern"
+  "minValue/maxValue": "Validators.min/max"
+
+routing:
+  "Ext.app.route / hash routes": { angular: "Angular Router routes (provideRouter)" }
+  "redirectTo / before":          { angular: "functional guards (CanActivateFn)" }
+  "route params":                 { angular: "route paramMap / input binding" }
